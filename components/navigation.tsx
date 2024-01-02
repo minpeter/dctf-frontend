@@ -23,10 +23,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 
 export function Navbar() {
-  const loggedOut = !localStorage.token;
+  let loggedOut = !localStorage.token;
 
   return (
     <NavigationMenu>

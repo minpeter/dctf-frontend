@@ -1,9 +1,11 @@
 "use client";
 export function SetAuthToken({ authToken }: { authToken: string }) {
   localStorage.token = authToken;
+  window.location.href = "/challs";
 }
 export function Logout() {
   localStorage.removeItem("token");
+  window.location.href = "/";
 }
 
 export function githubCallback({ githubCode }: { githubCode: string }) {
