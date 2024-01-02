@@ -51,7 +51,6 @@ export default function Page() {
   const [oauthState, setOauthState] = useState("");
   const handleClick = () => {
     setOauthState(githubPopup());
-    console.log("1. oauthState", oauthState);
   };
 
   useEffect(() => {
@@ -77,36 +76,22 @@ export default function Page() {
           data: { githubToken: string; githubId: string };
         } = await githubCallback({ githubCode: event.data.code });
 
-        console.log("3. githubCallback", kind, message, data);
-
         if (kind !== "goodGithubToken") {
           console.error(message);
           return;
         }
 
-        console.log("3. githubToken", data.githubToken);
-
         // 버튼 비활성화 시점
         const loginRes = await login({ githubToken: data.githubToken });
         if (loginRes.authToken) {
-          // setAuthToken({ authToken: loginRes.authToken });
-          console.log("4. login", loginRes.authToken);
-
           SetAuthToken({ authToken: loginRes.authToken });
         }
         if (loginRes && loginRes.badUnknownUser) {
-          // this.setState({
-          //   githubToken,
-          //   githubName,
-          // });
-
-          console.log("4. login failed", loginRes.badUnknownUser);
+          console.error("login failed", loginRes.badUnknownUser);
         }
       };
 
       action();
-
-      console.log("2. github code", event.data.code);
     });
   }, [oauthState]);
 

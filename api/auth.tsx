@@ -1,31 +1,27 @@
 "use client";
+
+import { request } from "@/api/util";
+
 export function SetAuthToken({ authToken }: { authToken: string }) {
   localStorage.token = authToken;
   window.location.href = "/challs";
 }
+
 export function Logout() {
   localStorage.removeItem("token");
   window.location.href = "/";
 }
 
-export function githubCallback({ githubCode }: { githubCode: string }) {
-  return fetch("/api/integrations/github/callback", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ githubCode }),
-  }).then((res) => res.json());
+export async function githubCallback({ githubCode }: { githubCode: string }) {
+  return await request("POST", "/integrations/github/callback", {
+    githubCode,
+  });
 }
 
 export async function login({ githubToken }: { githubToken: string }) {
-  const resp = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ githubToken: githubToken }),
-  }).then((res) => res.json());
+  const resp = await request("POST", "/auth/login", {
+    githubToken: githubToken,
+  });
 
   switch (resp.kind) {
     case "goodLogin":

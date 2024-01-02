@@ -45,20 +45,6 @@ export function Navbar() {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/profile" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Profile
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/challs" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Challenges
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
 
         {loggedOut ? (
           <NavigationMenuItem>
@@ -69,25 +55,43 @@ export function Navbar() {
             </Link>
           </NavigationMenuItem>
         ) : (
-          <NavigationMenuItem>
-            <AlertDialog>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                <AlertDialogTrigger>Logout</AlertDialogTrigger>
-              </NavigationMenuLink>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Logout</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to logout?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={Logout}>Logout</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </NavigationMenuItem>
+          <>
+            <NavigationMenuItem>
+              <Link href="/profile" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Profile
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="/challs" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Challenges
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <AlertDialog>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  <AlertDialogTrigger>Logout</AlertDialogTrigger>
+                </NavigationMenuLink>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Logout</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to logout?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={Logout}>
+                      Logout
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </NavigationMenuItem>
+          </>
         )}
       </NavigationMenuList>
     </NavigationMenu>
