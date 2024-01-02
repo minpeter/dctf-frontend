@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { Logout } from "@/api/auth";
 
 import {
   NavigationMenu,
@@ -12,17 +13,21 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
+  const loggedOut = !localStorage.token;
+
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -56,32 +61,35 @@ export function Navbar() {
           </Link>
         </NavigationMenuItem>
 
-        <NavigationMenuItem>
-          <Link href="/login" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Login
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Dialog>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              <DialogTrigger>Logout</DialogTrigger>
-            </NavigationMenuLink>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Logout</DialogTitle>
-                <DialogDescription>
-                  Are you sure you want to logout?
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex justify-end space-x-4">
-                <Button variant="outline">Cancel</Button>
-                <Button variant="destructive">Logout</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </NavigationMenuItem>
+        {loggedOut ? (
+          <NavigationMenuItem>
+            <Link href="/login" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Login
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        ) : (
+          <NavigationMenuItem>
+            <AlertDialog>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <AlertDialogTrigger>Logout</AlertDialogTrigger>
+              </NavigationMenuLink>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Logout</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to logout?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={Logout}>Logout</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </NavigationMenuItem>
+        )}
       </NavigationMenuList>
     </NavigationMenu>
   );

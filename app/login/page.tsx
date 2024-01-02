@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 import { useEffect, useState } from "react";
 
-import { githubCallback, login } from "@/api/auth";
+import { githubCallback, login, SetAuthToken } from "@/api/auth";
 
 function githubPopup(): string {
   const state = Array.from(crypto.getRandomValues(new Uint8Array(16)))
@@ -91,6 +91,8 @@ export default function Page() {
         if (loginRes.authToken) {
           // setAuthToken({ authToken: loginRes.authToken });
           console.log("4. login", loginRes.authToken);
+
+          SetAuthToken({ authToken: loginRes.authToken });
         }
         if (loginRes && loginRes.badUnknownUser) {
           // this.setState({

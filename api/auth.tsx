@@ -1,18 +1,10 @@
 "use client";
-
-import { error } from "console";
-
-export const setAuthToken = ({ authToken }: { authToken: string }) => {
+export function SetAuthToken({ authToken }: { authToken: string }) {
   localStorage.token = authToken;
-
-  // route
-};
-
-export const logout = () => {
+}
+export function Logout() {
   localStorage.removeItem("token");
-
-  // return route("/", true);
-};
+}
 
 export function githubCallback({ githubCode }: { githubCode: string }) {
   return fetch("/api/integrations/github/callback", {
