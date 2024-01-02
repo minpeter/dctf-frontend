@@ -17,7 +17,7 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DataTable, DataTableDemo } from "./solveTable";
+import { DataTableDemo } from "./solveTable";
 export default function Page() {
   return (
     <>
@@ -79,7 +79,6 @@ export default function Page() {
         </CardFooter>
       </Card>
 
-      {/* sovles */}
       <Card>
         <CardHeader>
           <CardTitle>Solves</CardTitle>
