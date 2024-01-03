@@ -1,252 +1,252 @@
 "use client";
 
-import {
-  CardTitle,
-  CardHeader,
-  CardContent,
-  CardFooter,
-  Card,
-  CardDescription,
-} from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Problem, { ProblemProps } from "@/components/problem";
+import { getChallenges } from "@/api/challenges";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge, badgeVariants } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
+import { useCallback, useState, useEffect, useMemo } from "react";
 
-import Link from "next/link";
+import { toast } from "sonner";
 
-import Fire from "@/components/confetti";
+const loadStates = {
+  pending: 0,
+  notStarted: 1,
+  loaded: 2,
+};
 
 export default function Page() {
+  // const challPageState = useMemo(
+  //   () => JSON.parse(localStorage.getItem("challPageState") || "{}"),
+  //   []
+  // );
+
+  const challPageState = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.challPageState || "{}");
+    } catch (e) {
+      return {};
+    }
+  }, []);
+
+  const [problems, setProblems] = useState(challPageState.problems || null);
+  const [categories, setCategories] = useState(challPageState.categories || {});
+  const [showSolved, setShowSolved] = useState(
+    challPageState.showSolved || false
+  );
+  const [solveIDs, setSolveIDs] = useState(challPageState.solveIDs || []);
+  const [loadState, setLoadState] = useState(loadStates.pending);
+
+  const [isNull, setIsNull] = useState(false);
+
+  const setSolved = useCallback((id: string) => {
+    setSolveIDs((solveIDs: string[]) => {
+      if (!solveIDs.includes(id)) {
+        return [...solveIDs, id];
+      }
+      return solveIDs;
+    });
+  }, []);
+
+  const handleShowSolvedChange = useCallback((e: any) => {
+    setShowSolved(e.target.checked);
+  }, []);
+
+  const handleCategoryCheckedChange = useCallback((e: any) => {
+    setCategories((categories: { [key: string]: boolean }) => ({
+      ...categories,
+      [e.target.dataset.category]: e.target.checked,
+    }));
+  }, []);
+
+  useEffect(() => {
+    const action = async () => {
+      if (problems !== null) {
+        return;
+      }
+      const {
+        data,
+        error,
+        notStarted,
+      }: {
+        data?: ProblemProps[] | null;
+        error?: string | null;
+        notStarted?: boolean;
+      } = await getChallenges();
+
+      if (error) {
+        toast.error(error);
+        return;
+      }
+
+      setLoadState(notStarted ? loadStates.notStarted : loadStates.loaded);
+      if (notStarted) {
+        return;
+      }
+
+      const newCategories = { ...categories };
+
+      if (data === undefined || data === null) {
+        setIsNull(true);
+        return;
+      } else {
+        data.forEach((problem) => {
+          if (newCategories[problem.category] === undefined) {
+            newCategories[problem.category] = false;
+          }
+        });
+
+        setProblems(data);
+        setCategories(newCategories);
+      }
+    };
+    action();
+  }, [categories, problems]);
+
+  useEffect(() => {
+    localStorage.challPageState = JSON.stringify({ categories, showSolved });
+  }, [categories, showSolved]);
+
+  const problemsToDisplay = useMemo(() => {
+    if (problems === null) {
+      return [];
+    }
+    let filtered = problems;
+    if (!showSolved) {
+      filtered = filtered.filter(
+        (problem: ProblemProps) => !solveIDs.includes(problem.id)
+      );
+    }
+    let filterCategories = false;
+    Object.values(categories).forEach((displayCategory) => {
+      if (displayCategory) filterCategories = true;
+    });
+    if (filterCategories) {
+      Object.keys(categories).forEach((category) => {
+        if (categories[category] === false) {
+          // Do not display this category
+          filtered = filtered.filter(
+            (problem: ProblemProps) => problem.category !== category
+          );
+        }
+      });
+    }
+
+    filtered.sort((a: ProblemProps, b: ProblemProps) => {
+      if (a.points === b.points) {
+        return b.solves - a.solves;
+      }
+      return a.points - b.points;
+    });
+
+    return filtered;
+  }, [problems, categories, showSolved, solveIDs]);
+
+  const { categoryCounts, solvedCount } = useMemo(() => {
+    const categoryCounts = new Map();
+    let solvedCount = 0;
+    if (problems !== null) {
+      for (const problem of problems) {
+        if (!categoryCounts.has(problem.category)) {
+          categoryCounts.set(problem.category, {
+            total: 0,
+            solved: 0,
+          });
+        }
+
+        const solved = solveIDs.includes(problem.id);
+        categoryCounts.get(problem.category).total += 1;
+        if (solved) {
+          categoryCounts.get(problem.category).solved += 1;
+        }
+
+        if (solved) {
+          solvedCount += 1;
+        }
+      }
+    }
+    return { categoryCounts, solvedCount };
+  }, [problems, solveIDs]);
+
+  if (loadState === loadStates.pending) {
+    return null;
+  }
+
+  if (loadState === loadStates.notStarted) {
+    return (
+      <div>
+        <h3>CTF is not started yet</h3>
+      </div>
+    );
+  }
+
+  if (isNull) {
+    return (
+      <div>
+        <h3>Challenge is empty</h3>
+      </div>
+    );
+  }
+
+  // const p1: ProblemProps = {
+  //   id: "1",
+  //   name: "sanity-check",
+  //   description: "I get to write the sanity check challenge! Alright!",
+  //   category: "misc",
+  //   author: "minpeter",
+  //   files: [],
+  //   points: 485,
+  //   solves: 1,
+  //   dynamic: "web",
+  // };
+
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-bold flex justify-between space-x-20">
-            <div className="flex space-x-4">
-              <h3>misc/sanity-check</h3>
-              <div className="flex space-x-2">
-                <Badge variant="outline">dynamic</Badge>
-                <Badge variant="outline">Running</Badge>
-              </div>
+    <div>
+      <div>Filters</div>
+      <input
+        id="show-solved"
+        className="form-ext-input"
+        type="checkbox"
+        checked={showSolved}
+        onChange={handleShowSolvedChange}
+      />
+      <label className="form-ext-label">
+        Show Solved ({solvedCount}/{problems.length} solved)
+      </label>
+
+      <div>Categories</div>
+      {Array.from(categoryCounts.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([category, { solved, total }]) => {
+          return (
+            <div key={category} className="form-ext-control form-ext-checkbox">
+              <input
+                id={`category-${category}`}
+                data-category={category}
+                className="form-ext-input"
+                type="checkbox"
+                checked={categories[category]}
+                onChange={handleCategoryCheckedChange}
+              />
+              <label className="form-ext-label">
+                {category} ({solved}/{total} solved)
+              </label>
             </div>
+          );
+        })}
 
-            <p>1 solves / 485 points</p>
-          </CardTitle>
-          <CardDescription>minpeter</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 py-4">
-          <p>I get to write the sanity check challenge! Alright!</p>
-
-          <div className="flex w-full items-center space-x-2">
-            <Input type="flag" placeholder="Flag" />
-            <Button type="submit" onClick={Fire}>
-              Submit
-            </Button>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-between items-center bg-gray-100 py-4 dark:bg-gray-800">
-          <div className="space-y-2">
-            <Label htmlFor="downloads">Downloads</Label>
-            <div className="flex space-x-2">
-              <Link
-                href="#none"
-                className={badgeVariants({ variant: "outline" })}
-              >
-                ciphertext.txt
-              </Link>
-              <Link
-                href="#none"
-                className={badgeVariants({ variant: "outline" })}
-              >
-                substitute.py
-              </Link>
-            </div>
-          </div>
-
-          <Button>Instance Start</Button>
-        </CardFooter>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-bold flex justify-between space-x-20">
-            <div className="flex space-x-4">
-              <h3>misc/sanity-check</h3>
-              <div className="flex space-x-2">
-                <Badge variant="outline">dynamic</Badge>
-                <Badge variant="outline">Running</Badge>
-              </div>
-            </div>
-
-            <p>1 solves / 485 points</p>
-          </CardTitle>
-          <CardDescription>minpeter</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 py-4">
-          <p>I get to write the sanity check challenge! Alright!</p>
-
-          <Tabs defaultValue="pwn" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="pwn">pwn</TabsTrigger>
-              <TabsTrigger value="socat">socat</TabsTrigger>
-              <TabsTrigger value="ncat">ncat</TabsTrigger>
-              <TabsTrigger value="openssl">openssl</TabsTrigger>
-              <TabsTrigger value="flag">Flag Submission</TabsTrigger>
-            </TabsList>
-            <TabsContent value="pwn">
-              <div className="flex w-full items-center space-x-2">
-                <Input
-                  type="connection"
-                  value="remote('bdspz.dklodd.minpeter.tech', 443, ssl=True)"
-                  readOnly
-                />
-                <Button type="submit">Copy</Button>
-              </div>
-            </TabsContent>
-            <TabsContent value="ncat">
-              <div className="flex w-full items-center space-x-2">
-                <Input
-                  type="connection"
-                  value="ncat --ssl bdspz.dklodd.minpeter.tech 443"
-                  readOnly
-                />
-                <Button type="submit">Copy</Button>
-              </div>
-            </TabsContent>
-            <TabsContent value="socat">
-              <div className="flex w-full items-center space-x-2">
-                <Input
-                  type="connection"
-                  value="socat openssl-connect:bdspz.dklodd.minpeter.tech:443"
-                  readOnly
-                />
-                <Button type="submit">Copy</Button>
-              </div>
-            </TabsContent>
-            <TabsContent value="openssl">
-              <div className="flex w-full items-center space-x-2">
-                <Input
-                  type="connection"
-                  value="openssl s_client -connect bdspz.dklodd.minpeter.tech:443"
-                  readOnly
-                />
-                <Button type="submit">Copy</Button>
-              </div>
-            </TabsContent>
-            <TabsContent value="flag">
-              <div className="flex w-full items-center space-x-2">
-                <Input type="flag" placeholder="Flag" />
-                <Button type="submit" onClick={Fire}>
-                  Sumit
-                </Button>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-        <CardFooter className="flex justify-between items-center bg-gray-100 py-4 dark:bg-gray-800">
-          <div className="space-y-2">
-            <Label htmlFor="downloads">Downloads</Label>
-            <div className="flex space-x-2">
-              <Link
-                href="#none"
-                className={badgeVariants({ variant: "outline" })}
-              >
-                ciphertext.txt
-              </Link>
-              <Link
-                href="#none"
-                className={badgeVariants({ variant: "outline" })}
-              >
-                substitute.py
-              </Link>
-            </div>
-          </div>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button>Instance Stop</Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Stopping in 3 minute</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </CardFooter>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-bold flex justify-between space-x-20">
-            <div className="flex space-x-4">
-              <h3>misc/sanity-check</h3>
-              <div className="flex space-x-2">
-                <Badge variant="outline">dynamic</Badge>
-                <Badge variant="outline">Running</Badge>
-              </div>
-            </div>
-
-            <p>1 solves / 485 points</p>
-          </CardTitle>
-          <CardDescription>minpeter</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 py-4">
-          {/* web site 주소 */}
-          <Link
-            href="https://sanity-check.chal.seccon.jp/"
-            className="text-blue-500"
-          >
-            https://sanity-check.chal.seccon.jp/
-          </Link>
-
-          <p>I get to write the sanity check challenge! Alright!</p>
-
-          <div className="flex w-full items-center space-x-2">
-            <Input type="flag" placeholder="Flag" />
-            <Button type="submit" onClick={Fire}>
-              Sumit
-            </Button>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-between items-center bg-gray-100 py-4 dark:bg-gray-800">
-          <div className="space-y-2">
-            <Label htmlFor="downloads">Downloads</Label>
-            <div className="flex space-x-2">
-              <Link
-                href="#none"
-                className={badgeVariants({ variant: "outline" })}
-              >
-                ciphertext.txt
-              </Link>
-              <Link
-                href="#none"
-                className={badgeVariants({ variant: "outline" })}
-              >
-                substitute.py
-              </Link>
-            </div>
-          </div>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button>Instance Stop</Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Stopping in 3 minute</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </CardFooter>
-      </Card>
-    </>
+      {solvedCount == problems.length && !showSolved ? (
+        <div>I solved all the problems.</div>
+      ) : (
+        problemsToDisplay.map((problem: ProblemProps) => {
+          return (
+            <Problem
+              key={problem.id}
+              problem={problem}
+              solved={solveIDs.includes(problem.id)}
+              setSolved={setSolved}
+            />
+          );
+        })
+      )}
+    </div>
   );
 }

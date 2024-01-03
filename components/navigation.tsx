@@ -28,12 +28,16 @@ import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const [isClient, setIsClient] = useState(false);
-
   const [admin, setAdmin] = useState(false);
+
   useEffect(() => {
     setIsClient(true);
 
-    checkAdmin().then(setAdmin);
+    if (localStorage.token) {
+      checkAdmin().then((resp) => {
+        setAdmin(resp);
+      });
+    }
   }, []);
 
   let loggedOut = false;
@@ -45,7 +49,7 @@ export default function Navbar() {
   return (
     <NavigationMenu>
       <NavigationMenuList>
-        {admin && (
+        {admin && !loggedOut && (
           <NavigationMenuItem>
             <Link href="/admin" legacyBehavior passHref>
               <NavigationMenuLink className={navigationMenuTriggerStyle()}>

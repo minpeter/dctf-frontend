@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Inter as FontSans } from "next/font/google";
 import Navbar from "@/components/navigation";
+import { Toaster } from "@/components/ui/sonner";
 
 import { cn } from "@/lib/utils";
 
@@ -25,11 +26,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontSans.variable
         )}
       >
-        <div className="flex flex-col items-center justify-center p-10 gap-10">
+        <div className="flex flex-col items-center justify-center p-10 gap-10 mb-24">
           <Navbar />
 
           {children}
         </div>
+        <Toaster />
       </body>
     </html>
   );
