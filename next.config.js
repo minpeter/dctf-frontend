@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  reactStrictMode: true,
+};
+
+const output = "export";
 
 const rewrites = () => {
   return [
@@ -10,6 +14,10 @@ const rewrites = () => {
   ];
 };
 
-nextConfig.rewrites = rewrites;
+if (process.env.NODE_ENV === "development") {
+  nextConfig.rewrites = rewrites;
+} else {
+  nextConfig.output = output;
+}
 
 module.exports = nextConfig;

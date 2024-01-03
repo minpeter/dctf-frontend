@@ -5,7 +5,15 @@ export function relog() {
   window.location.href = "/login";
 }
 
-export const handleResponse = ({ resp, valid, resolveDataMessage }) => {
+export const handleResponse = ({
+  resp,
+  valid,
+  resolveDataMessage,
+}: {
+  resp: any;
+  valid: Array<string>;
+  resolveDataMessage: boolean;
+}) => {
   if (valid.includes(resp.kind)) {
     if (resolveDataMessage) {
       return {
@@ -21,7 +29,11 @@ export const handleResponse = ({ resp, valid, resolveDataMessage }) => {
   };
 };
 
-export const request = (method, endpoint, data) => {
+export const request = (
+  method: "GET" | "POST" | "PUT" | "DELETE",
+  endpoint: string,
+  data: any
+) => {
   let body = null;
   let qs = "";
   if (method === "GET" && data) {
@@ -35,7 +47,8 @@ export const request = (method, endpoint, data) => {
   } else {
     body = data;
   }
-  const headers = {
+
+  const headers: { [key: string]: string } = {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   };
   if (body) {
