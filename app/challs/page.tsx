@@ -1,5 +1,7 @@
 "use client";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import Problem, { ProblemProps } from "@/components/problem";
 import { getChallenges } from "@/api/challenges";
 
@@ -199,54 +201,67 @@ export default function Page() {
   // };
 
   return (
-    <div>
-      <div>Filters</div>
-      <input
-        id="show-solved"
-        className="form-ext-input"
-        type="checkbox"
-        checked={showSolved}
-        onChange={handleShowSolvedChange}
-      />
-      <label className="form-ext-label">
-        Show Solved ({solvedCount}/{problems.length} solved)
-      </label>
-
-      <div>Categories</div>
-      {Array.from(categoryCounts.entries())
-        .sort((a, b) => a[0].localeCompare(b[0]))
-        .map(([category, { solved, total }]) => {
-          return (
-            <div key={category} className="form-ext-control form-ext-checkbox">
-              <input
-                id={`category-${category}`}
-                data-category={category}
-                className="form-ext-input"
-                type="checkbox"
-                checked={categories[category]}
-                onChange={handleCategoryCheckedChange}
-              />
-              <label className="form-ext-label">
-                {category} ({solved}/{total} solved)
-              </label>
-            </div>
-          );
-        })}
-
-      {solvedCount == problems.length && !showSolved ? (
-        <div>I solved all the problems.</div>
-      ) : (
-        problemsToDisplay.map((problem: ProblemProps) => {
-          return (
-            <Problem
-              key={problem.id}
-              problem={problem}
-              solved={solveIDs.includes(problem.id)}
-              setSolved={setSolved}
+    <div className="flex flex-row space-x-4">
+      <div className="flex flex-col space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Filters</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <input
+              id="show-solved"
+              type="checkbox"
+              checked={showSolved}
+              onChange={handleShowSolvedChange}
             />
-          );
-        })
-      )}
+            <label>
+              Show Solved ({solvedCount}/{problems.length} solved)
+            </label>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Categories</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {Array.from(categoryCounts.entries())
+              .sort((a, b) => a[0].localeCompare(b[0]))
+              .map(([category, { solved, total }]) => {
+                return (
+                  <div key={category}>
+                    <input
+                      id={`category-${category}`}
+                      data-category={category}
+                      type="checkbox"
+                      checked={categories[category]}
+                      onChange={handleCategoryCheckedChange}
+                    />
+                    <label>
+                      {category} ({solved}/{total} solved)
+                    </label>
+                  </div>
+                );
+              })}
+          </CardContent>
+        </Card>
+      </div>
+      <div className="flex flex-col space-y-4">
+        {solvedCount == problems.length && !showSolved ? (
+          <div>I solved all the problems.</div>
+        ) : (
+          problemsToDisplay.map((problem: ProblemProps) => {
+            return (
+              <Problem
+                key={problem.id}
+                problem={problem}
+                solved={solveIDs.includes(problem.id)}
+                setSolved={setSolved}
+              />
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }

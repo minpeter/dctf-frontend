@@ -77,6 +77,7 @@ export default function Problem({
         <Input
           placeholder={solved ? "Solved" : "Flag"}
           onChange={(e) => setValue(e.target.value)}
+          readOnly={solved}
         />
         <Button type="submit" onClick={submit} disabled={solved}>
           {solved ? "Solved" : "Submit"}
@@ -161,22 +162,21 @@ export default function Problem({
               </div>
             </TabsContent>
             <TabsContent value="openssl">
-              <FlagInput />
+              <div className="flex w-full items-center space-x-2">
+                <Input
+                  type="connection"
+                  value="openssl s_client -connect bdspz.dklodd.minpeter.tech:443"
+                  readOnly
+                />
+                <Button type="submit">Copy</Button>
+              </div>
             </TabsContent>
             <TabsContent value="flag">
               <FlagInput />
             </TabsContent>
           </Tabs>
         ) : (
-          <div className="flex w-full items-center space-x-2">
-            <Input
-              placeholder="Flag"
-              onChange={(e) => setValue(e.target.value)}
-            />
-            <Button type="submit" onClick={submit}>
-              Sumit
-            </Button>
-          </div>
+          <FlagInput />
         )}
       </CardContent>
       <CardFooter className="flex justify-between items-center bg-gray-100 py-4 dark:bg-gray-800">
