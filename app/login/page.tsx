@@ -1,6 +1,8 @@
 "use client";
 
+// @ts-ignore
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
+
 import { Button } from "@/components/ui/button";
 
 import { useEffect, useState } from "react";

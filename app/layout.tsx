@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Inter as FontSans } from "next/font/google";
-import { Navbar } from "@/components/navigation";
+import Navbar from "@/components/navigation";
 
 import { cn } from "@/lib/utils";
 
