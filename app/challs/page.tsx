@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import Problem, { ProblemProps } from "@/components/problem";
 import { getChallenges } from "@/api/challenges";
@@ -43,8 +44,8 @@ export default function Page() {
     });
   }, []);
 
-  const handleShowSolvedChange = useCallback((e: any) => {
-    setShowSolved(e.target.checked);
+  const handleShowSolvedChange = useCallback((checked: boolean) => {
+    setShowSolved(checked);
   }, []);
 
   const handleCategoryCheckedChange = useCallback((e: any) => {
@@ -191,15 +192,19 @@ export default function Page() {
             <CardTitle>Filters</CardTitle>
           </CardHeader>
           <CardContent>
-            <input
-              id="show-solved"
-              type="checkbox"
-              checked={showSolved}
-              onChange={handleShowSolvedChange}
-            />
-            <label>
-              Show Solved ({solvedCount}/{problems.length} solved)
-            </label>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="show-solved"
+                checked={showSolved}
+                onCheckedChange={handleShowSolvedChange}
+              />
+              <label
+                htmlFor="show-solved"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Show Solved ({solvedCount}/{problems.length} solved)
+              </label>
+            </div>
           </CardContent>
         </Card>
 
