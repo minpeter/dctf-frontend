@@ -23,7 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import Link from "next/link";
 import Fire from "@/components/confetti";
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
 import { submitFlag } from "@/api/challenges";
 
 // sync with backend CleanedChallenge struct
@@ -53,20 +53,23 @@ export default function Problem({
   const isTcp = problem.dynamic === "tcp";
   const isFileExists = problem.files.length > 0;
 
+  console.log(problem.name, " is  ", solved ? "solved" : "not solved");
+
   const [value, setValue] = useState("");
 
-  const submit = () => {
-    submitFlag(problem.id, value).then((resp) => {
-      if (resp.error) {
-        toast(resp.error);
-        return;
-      } else {
+  const submit = useCallback(() => {
+    submitFlag(problem.id, value.trim()).then(({ error }) => {
+      if (error === undefined) {
         Fire();
+
+        toast.success("Flag successfully submitted!");
+
         setSolved(problem.id);
-        toast("Correct!");
+      } else {
+        toast.error(error);
       }
     });
-  };
+  }, [setSolved, problem, value]);
 
   const FlagInput = () => {
     return (

@@ -1,3 +1,5 @@
+"use client";
+
 import { request, handleResponse } from "./util";
 
 export const getChallenges = async () => {
