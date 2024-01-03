@@ -48,12 +48,15 @@ export default function Page() {
     setShowSolved(checked);
   }, []);
 
-  const handleCategoryCheckedChange = useCallback((e: any) => {
-    setCategories((categories: { [key: string]: boolean }) => ({
-      ...categories,
-      [e.target.dataset.category]: e.target.checked,
-    }));
-  }, []);
+  const handleCategoryCheckedChange = useCallback(
+    (checked: boolean, category: string) => () => {
+      setCategories((categories: { [key: string]: boolean }) => ({
+        ...categories,
+        [category]: checked,
+      }));
+    },
+    []
+  );
 
   useEffect(() => {
     const action = async () => {
@@ -213,24 +216,30 @@ export default function Page() {
             <CardTitle>Categories</CardTitle>
           </CardHeader>
           <CardContent>
-            {Array.from(categoryCounts.entries())
-              .sort((a, b) => a[0].localeCompare(b[0]))
-              .map(([category, { solved, total }]) => {
-                return (
-                  <div key={category}>
-                    <input
-                      id={`category-${category}`}
-                      data-category={category}
-                      type="checkbox"
-                      checked={categories[category]}
-                      onChange={handleCategoryCheckedChange}
-                    />
-                    <label>
-                      {category} ({solved}/{total} solved)
-                    </label>
-                  </div>
-                );
-              })}
+            <div className="flex flex-col space-y-2">
+              {Array.from(categoryCounts.entries())
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .map(([category, { solved, total }]) => {
+                  return (
+                    <div key={category} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`category-${category}`}
+                        checked={categories[category]}
+                        onCheckedChange={handleCategoryCheckedChange(
+                          !categories[category],
+                          category
+                        )}
+                      />
+                      <label
+                        htmlFor={`category-${category}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {category} ({solved}/{total} solved)
+                      </label>
+                    </div>
+                  );
+                })}
+            </div>
           </CardContent>
         </Card>
       </div>
