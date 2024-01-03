@@ -16,11 +16,6 @@ const loadStates = {
 };
 
 export default function Page() {
-  // const challPageState = useMemo(
-  //   () => JSON.parse(localStorage.getItem("challPageState") || "{}"),
-  //   []
-  // );
-
   const challPageState = useMemo(() => {
     try {
       return JSON.parse(localStorage.challPageState || "{}");
@@ -187,18 +182,6 @@ export default function Page() {
       </div>
     );
   }
-
-  // const p1: ProblemProps = {
-  //   id: "1",
-  //   name: "sanity-check",
-  //   description: "I get to write the sanity check challenge! Alright!",
-  //   category: "misc",
-  //   author: "minpeter",
-  //   files: [],
-  //   points: 485,
-  //   solves: 1,
-  //   dynamic: "web",
-  // };
 
   return (
     <div className="flex flex-row space-x-4">
