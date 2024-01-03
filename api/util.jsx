@@ -1,3 +1,5 @@
+"use client";
+
 export function relog() {
   localStorage.removeItem("token");
   window.location.href = "/login";
