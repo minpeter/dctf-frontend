@@ -12,7 +12,7 @@ export const handleResponse = ({
 }: {
   resp: any;
   valid: Array<string>;
-  resolveDataMessage: boolean;
+  resolveDataMessage?: boolean;
 }) => {
   if (valid.includes(resp.kind)) {
     if (resolveDataMessage) {
@@ -32,7 +32,7 @@ export const handleResponse = ({
 export const request = (
   method: "GET" | "POST" | "PUT" | "DELETE",
   endpoint: string,
-  data: any
+  data?: any
 ) => {
   let body = null;
   let qs = "";

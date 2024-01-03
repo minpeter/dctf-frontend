@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Logout } from "@/api/auth";
+import { checkAdmin } from "@/api/admin";
 
 import {
   NavigationMenu,
@@ -28,8 +29,11 @@ import { useState, useEffect } from "react";
 export default function Navbar() {
   const [isClient, setIsClient] = useState(false);
 
+  const [admin, setAdmin] = useState(false);
   useEffect(() => {
     setIsClient(true);
+
+    checkAdmin().then(setAdmin);
   }, []);
 
   let loggedOut = false;
@@ -41,6 +45,16 @@ export default function Navbar() {
   return (
     <NavigationMenu>
       <NavigationMenuList>
+        {admin && (
+          <NavigationMenuItem>
+            <Link href="/admin" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Admin
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        )}
+
         <NavigationMenuItem>
           <Link href="/" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
@@ -57,56 +71,52 @@ export default function Navbar() {
           </Link>
         </NavigationMenuItem>
 
-        {isClient ? (
-          loggedOut ? (
+        {isClient && loggedOut ? (
+          <NavigationMenuItem>
+            <Link href="/login" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Login
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        ) : (
+          <>
             <NavigationMenuItem>
-              <Link href="/login" legacyBehavior passHref>
+              <Link href="/profile" legacyBehavior passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Login
+                  Profile
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
-          ) : (
-            <>
-              <NavigationMenuItem>
-                <Link href="/profile" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Profile
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="/challs" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Challenges
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <AlertDialog>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    <AlertDialogTrigger>Logout</AlertDialogTrigger>
-                  </NavigationMenuLink>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Logout</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to logout?
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={Logout}>
-                        Logout
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </NavigationMenuItem>
-            </>
-          )
-        ) : (
-          <></>
+            <NavigationMenuItem>
+              <Link href="/challs" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Challenges
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <AlertDialog>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  <AlertDialogTrigger>Logout</AlertDialogTrigger>
+                </NavigationMenuLink>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Logout</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to logout?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={Logout}>
+                      Logout
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </NavigationMenuItem>
+          </>
         )}
       </NavigationMenuList>
     </NavigationMenu>
