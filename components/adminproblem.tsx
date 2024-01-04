@@ -1,90 +1,29 @@
 import { useState, useCallback } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { toast } from "sonner";
 
-import { Card, CardContent } from "@/components/ui/card";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import { updateChallenge, deleteChallenge, uploadFiles } from "@/api/admin";
 // import { encodeFile } from "../../util";
-// import Modal from "@/components/modal";
-// const DeleteModal = ({ open, onClose, onDelete }) => {
-//   const wrappedOnClose = useCallback(
-//     (e:any) => {
-//       e.preventDefault();
-//       onClose();
-//     },
-//     [onClose]
-//   );
-//   const wrappedOnDelete = useCallback(
-//     (e:any) => {
-//       e.preventDefault();
-//       onDelete();
-//     },
-//     [onDelete]
-//   );
-
-//   return (
-//     <Modal open={open} onClose={onClose}>
-//       <div className="modal-header">
-//         <div className="modal-title">Delete Challenge?</div>
-//       </div>
-//       <div className={`modal-body `}>
-//         This is an irreversible action that permanently deletes the challenge
-//         and revokes all solves.
-//         <div>
-//           <div className="btn-container u-inline-block mt-2">
-//             <button type="button" className="btn--sm mr-1" onClick={wrappedOnClose}>
-//               Cancel
-//             </button>
-//           </div>
-//           <div className="btn-container u-inline-block">
-//             <button
-//               type="submit"
-//               className="btn--sm btn-danger"
-//               onClick={wrappedOnDelete}
-//             >
-//               Delete Challenge
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </Modal>
-//   );
-// };
-const FormSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-});
-
-function onSubmit(data: z.infer<typeof FormSchema>) {
-  // toast({
-  //   title: "You submitted the following values:",
-  //   description: (
-  //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-  //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-  //     </pre>
-  //   ),
-  // });
-
-  toast.success("Success!");
-}
 
 export default function AdminProblem({
   problem,
@@ -95,12 +34,6 @@ export default function AdminProblem({
   update: any;
   delete: any;
 }) {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      username: "",
-    },
-  });
   console.log(problem);
   const [flag, setFlag] = useState(problem.flag);
   const handleFlagChange = useCallback((e: any) => setFlag(e.target.value), []);
@@ -271,185 +204,148 @@ export default function AdminProblem({
 
   return (
     <>
-      <Card>
-        <CardContent>
-          <form onSubmit={handleUpdate} className="frame__body p-0">
-            <div className="p-0 u-flex u-flex-column u-gap-1">
-              <input
-                // autocomplete="off"
-                // autocorrect="off"
-                required
-                className="form-group-input input-small"
+      <Card className="pt-6">
+        <CardContent className="grid grid-cols-1 gap-2">
+          <div className="flex flex-col md:flex-row md:justify-between gap-2">
+            <div>
+              <Label htmlFor="category">Category</Label>
+              <Input
+                id="category"
                 placeholder="Category"
+                required
                 value={category}
                 onChange={handleCategoryChange}
               />
-              <input
-                // autocomplete="off"
-                // autocorrect="off"
-                required
-                className="form-group-input input-small"
+            </div>
+
+            <div>
+              <Label htmlFor="name">Problem Name</Label>
+              <Input
+                id="name"
                 placeholder="Problem Name"
+                required
                 value={name}
                 onChange={handleNameChange}
               />
-              <div className="form-ext-control form-ext-checkbox">
-                <input
-                  id={`chall-${problem.id}-tiebreak-eligible`}
-                  type="checkbox"
-                  className="form-ext-input"
-                  checked={tiebreakEligible}
-                  onChange={handleTiebreakEligibleChange}
-                />
-                <label
-                  // for={`chall-${problem.id}-tiebreak-eligible`}
-                  className="form-ext-label"
-                >
-                  Eligible for tiebreaks?
-                </label>
-              </div>
-              <input
-                // autocomplete="off"
-                // autocorrect="off"
-                required
-                className="form-group-input input-small"
-                placeholder="Author"
-                value={author}
-                onChange={handleAuthorChange}
-              />
-              <input
-                className="form-group-input input-small"
-                type="number"
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id={`chall-${problem.id}-tiebreak-eligible`}
+              checked={tiebreakEligible}
+              onChange={handleTiebreakEligibleChange}
+            />
+            <label
+              htmlFor={`chall-${problem.id}-tiebreak-eligible`}
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Eligible for tiebreaks?
+            </label>
+          </div>
+
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="author">Author</Label>
+            <Input
+              required
+              id="author"
+              placeholder="Author"
+              value={author}
+              onChange={handleAuthorChange}
+            />
+          </div>
+
+          <div className="flex flex-col md:flex-row md:justify-between gap-2">
+            <div>
+              <Label htmlFor="minPoints">min points</Label>
+              <Input
+                id="minPoints"
                 required
                 value={minPoints}
                 onChange={handleMinPointsChange}
               />
-              <input
-                className="form-group-input input-small"
-                type="number"
+            </div>
+            <div>
+              <Label htmlFor="maxPoints">max points</Label>
+              <Input
+                id="maxPoints"
                 required
                 value={maxPoints}
                 onChange={handleMaxPointsChange}
               />
             </div>
+          </div>
 
-            <div className="divider" />
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="flag">Flag</Label>
+            <Input
+              required
+              id="flag"
+              placeholder="Flag"
+              value={flag}
+              onChange={handleFlagChange}
+            />
+          </div>
 
-            <textarea
-              // autocomplete="off"
-              // autocorrect="off"
-              placeholder="Description"
+          <div className="grid w-full gap-1.5">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              placeholder="Type your description here."
+              id="description"
               value={description}
               onChange={handleDescriptionChange}
-              className="p-2"
             />
-            <div className="input-control">
-              <input
-                // autocomplete="off"
-                // autocorrect="off"
-                required
-                className="form-group-input input-small"
-                placeholder="Flag"
-                value={flag}
-                onChange={handleFlagChange}
-              />
-            </div>
+          </div>
 
-            {problem.files.length !== 0 && (
-              <div>
-                <p className={`frame__subtitle m-0  `}>Downloads</p>
-                <div className="tag-container">
-                  {problem.files.map((file: any) => {
-                    return (
-                      <div className="tag" key={file.url}>
-                        <a download href={file.url}>
-                          {file.name}
-                        </a>
-                        <div
-                          className="tag tag--delete"
-                          // style="margin: 0; margin-left: 3px"
-                          onClick={handleRemoveFile(file)}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
+          {/* 
+          {problem.files.length !== 0 && (
+            <div>
+              <p className={`frame__subtitle m-0  `}>Downloads</p>
+              <div className="tag-container">
+                {problem.files.map((file: any) => {
+                  return (
+                    <div className="tag" key={file.url}>
+                      <a download href={file.url}>
+                        {file.name}
+                      </a>
+                      <div
+                        className="tag tag--delete"
+                        // style="margin: 0; margin-left: 3px"
+                        onClick={handleRemoveFile(file)}
+                      />
+                    </div>
+                  );
+                })}
               </div>
-            )}
-
-            {/* <div className="input-control">
-            <input
-              className="form-group-input input-small"
-              type="file"
-              multiple
-              onChange={handleFileUpload}
-            />
-          </div> */}
-
-            <div className="divider" />
-
-            {/* 옵션으로 DKLODD IMAGE 입력 필드와 TYPE (web or tcp) 선택 */}
-            {/* <div className="input-control">
-            <input
-              // autocomplete="off"
-              // autocorrect="off"
-              className="form-group-input input-small"
-              placeholder="Container IMAGE"
-              value={image}
-              onChange={handleImageChange}
-            />
-            {/* 셀렉트박스로 web or tcp type 선택 */}
-            {/* <select
-              className="form-group-input input-small"
-              value={type}
-              onChange={handleTypeChange}
-            >
-              <option value="web">web</option>
-              <option value="tcp">tcp</option>
-            </select>
-          </div> */}
-
-            <button className="btn--sm btn-info mr-1">Update</button>
-            <button
-              className="btn--sm btn-danger"
-              onClick={openDeleteModal}
-              type="button"
-            >
-              Delete
-            </button>
-          </form>
-
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="w-2/3 space-y-6"
-            >
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="shadcn" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      This is your public display name.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit">Submit</Button>
-            </form>
-          </Form>
+            </div>
+          )} */}
         </CardContent>
+
+        <CardFooter className="flex justify-end gap-2 bg-gray-100 pt-4">
+          <Button onClick={handleUpdate}>Update</Button>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">Delete</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your challenge data from servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardFooter>
       </Card>
-      {/* <DeleteModal
-        open={isDeleteModalOpen}
-        onClose={closeDeleteModal}
-        onDelete={handleDelete}
-      /> */}
     </>
   );
 }

@@ -116,7 +116,7 @@ export default function Page() {
   );
 
   return (
-    <div>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
       {completeProblems.map((problem) => {
         return (
           <AdminProblem

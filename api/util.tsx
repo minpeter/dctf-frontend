@@ -30,7 +30,7 @@ export const handleResponse = ({
 };
 
 export const request = (
-  method: "GET" | "POST" | "PUT" | "DELETE",
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   endpoint: string,
   data?: any
 ) => {
