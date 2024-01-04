@@ -22,9 +22,10 @@ import { Badge, badgeVariants } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import Link from "next/link";
-import Fire from "@/components/confetti";
 import { useState, useCallback } from "react";
 import { submitFlag } from "@/api/challenges";
+
+import Fire from "@/components/confetti";
 
 // sync with backend CleanedChallenge struct
 export type ProblemProps = {
@@ -36,7 +37,7 @@ export type ProblemProps = {
   files: string[];
   points: number;
   solves: number;
-  dynamic: "tcp" | "web" | "none";
+  dynamic?: "tcp" | "web" | "none";
 };
 
 export default function Problem({
@@ -48,7 +49,7 @@ export default function Problem({
   solved: boolean;
   setSolved: (id: string) => void;
 }) {
-  const isDynamic = problem.dynamic !== "none";
+  const isDynamic = problem.dynamic === "tcp" || problem.dynamic === "web";
   const isWeb = problem.dynamic === "web";
   const isTcp = problem.dynamic === "tcp";
   const isFileExists = problem.files.length > 0;
@@ -56,6 +57,10 @@ export default function Problem({
   console.log(problem.name, " is  ", solved ? "solved" : "not solved");
 
   const [value, setValue] = useState("");
+  const handleInputChange = useCallback(
+    (e: any) => setValue(e.target.value),
+    []
+  );
 
   const submit = useCallback(() => {
     submitFlag(problem.id, value.trim()).then(({ error }) => {
@@ -71,23 +76,8 @@ export default function Problem({
     });
   }, [setSolved, problem, value]);
 
-  const FlagInput = () => {
-    return (
-      <div className="flex w-full items-center space-x-2">
-        <Input
-          placeholder={solved ? "Solved" : "Flag"}
-          onChange={(e) => setValue(e.target.value)}
-          readOnly={solved}
-        />
-        <Button type="submit" onClick={submit} disabled={solved}>
-          {solved ? "Solved" : "Submit"}
-        </Button>
-      </div>
-    );
-  };
-
   return (
-    <Card className="w-full lg:max-w-screen-md">
+    <Card>
       <CardHeader>
         <CardTitle className="text-lg font-bold flex justify-between space-x-20">
           <div className="flex space-x-4">
@@ -172,11 +162,31 @@ export default function Problem({
               </div>
             </TabsContent>
             <TabsContent value="flag">
-              <FlagInput />
+              <div className="flex w-full items-center space-x-2">
+                <Input
+                  placeholder={`Flag${solved ? " (solved)" : ""}`}
+                  value={value}
+                  onChange={handleInputChange}
+                  readOnly={solved}
+                />
+                <Button type="submit" onClick={submit} disabled={solved}>
+                  {solved ? "Solved" : "Submit"}
+                </Button>
+              </div>
             </TabsContent>
           </Tabs>
         ) : (
-          <FlagInput />
+          <div className="flex w-full items-center space-x-2">
+            <Input
+              placeholder={`Flag${solved ? " (solved)" : ""}`}
+              value={value}
+              onChange={handleInputChange}
+              readOnly={solved}
+            />
+            <Button type="submit" onClick={submit} disabled={solved}>
+              {solved ? "Solved" : "Submit"}
+            </Button>
+          </div>
         )}
       </CardContent>
       <CardFooter className="flex justify-between items-center bg-gray-100 py-4 dark:bg-gray-800">

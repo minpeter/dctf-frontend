@@ -3,8 +3,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import Problem, { ProblemProps } from "@/components/problem";
 import { getChallenges } from "@/api/challenges";
+
+import Problem, { ProblemProps } from "@/components/problem";
 
 import { useCallback, useState, useEffect, useMemo } from "react";
 
@@ -188,7 +189,7 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0">
+    <div className="flex w-full flex-col space-y-4 lg:w-fit lg:flex-row lg:space-x-4 lg:space-y-0">
       <div className="flex flex-col space-y-4">
         <Card>
           <CardHeader>

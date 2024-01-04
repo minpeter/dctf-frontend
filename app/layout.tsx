@@ -26,7 +26,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontSans.variable
         )}
       >
-        <div className="flex flex-col items-center justify-center p-10 gap-10 mb-24">
+        <div className="flex flex-col items-center justify-center p-10 mb-24">
           <Navbar />
 
           {children}
