@@ -188,7 +188,7 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-row space-x-4">
+    <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4 lg:space-y-0">
       <div className="flex flex-col space-y-4">
         <Card>
           <CardHeader>

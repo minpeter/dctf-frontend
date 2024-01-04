@@ -87,7 +87,7 @@ export default function Problem({
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full lg:max-w-screen-md">
       <CardHeader>
         <CardTitle className="text-lg font-bold flex justify-between space-x-20">
           <div className="flex space-x-4">
